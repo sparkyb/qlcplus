@@ -62,6 +62,9 @@ ShowEditor::ShowEditor(QWidget* parent, Show* show, Doc* doc)
     connect(m_add, SIGNAL(clicked()), this, SLOT(slotAdd()));
     connect(m_remove, SIGNAL(clicked()), this, SLOT(slotRemove()));
 
+    connect(m_tree, SIGNAL(itemChanged(QTreeWidgetItem*,int)),
+            this, SLOT(slotItemChanged(QTreeWidgetItem*,int)));
+
     // for now just disabled the add/remove buttons
     m_add->setVisible(false);
     m_remove->setVisible(false);
@@ -92,6 +95,45 @@ void ShowEditor::slotAdd()
 void ShowEditor::slotRemove()
 {
 
+}
+
+void ShowEditor::slotItemChanged(QTreeWidgetItem *item, int column)
+{
+    quint32 funcId = item->data(NAME_COL, PROP_ID).toInt();
+    QString itemText = item->text(column);
+    quint32 newValue = Function::stringToSpeed(itemText);
+
+    if (m_show == NULL)
+    {
+        qDebug() << Q_FUNC_INFO << "Invalid show!";
+        return;
+    }
+
+    ShowFunction *showFunc = NULL;
+
+    foreach(Track *track, m_show->tracks())
+    {
+        foreach(ShowFunction *sf, track->showFunctions())
+        {
+            if (funcId == sf->functionID())
+            {
+                showFunc = sf;
+                break;
+            }
+        }
+        if (showFunc) break;
+    }
+
+    if (showFunc == NULL)
+    {
+        qDebug() << Q_FUNC_INFO << "Couldn't find show function";
+        return;
+    }
+
+    if (column == TIME_COL)
+    {
+        showFunc->setStartTime(newValue);
+    }
 }
 
 void ShowEditor::updateFunctionList()
@@ -143,21 +185,20 @@ void ShowEditor::updateFunctionList()
             else
                 fItem = new QTreeWidgetItem(sceneItem);
 
+            fItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsEditable);
             fItem->setText(NAME_COL, func->name());
             fItem->setData(NAME_COL, PROP_ID, func->id());
+            fItem->setIcon(NAME_COL, func->getIcon());
             fItem->setText(TIME_COL, Function::speedToString(sf->startTime()));
             fItem->setText(DUR_COL, Function::speedToString(sf->duration(m_doc)));
             if (sf->startTime() + sf->duration(m_doc) > totalDuration)
                 totalDuration = sf->startTime() + sf->duration(m_doc);
 
-            if (func->type() == Function::ChaserType)
+            if (func->type() == Function::ChaserType || func->type() == Function::SequenceType)
             {
                 Chaser *chaser = qobject_cast<Chaser*>(func);
-                fItem->setIcon(NAME_COL, QIcon(":/sequence.png"));
                 fItem->setText(STEPS_COL, QString("%1").arg(chaser->steps().count()));
             }
-            else
-                fItem->setIcon(NAME_COL, func->getIcon());
         }
     }
 

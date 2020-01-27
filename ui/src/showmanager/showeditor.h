@@ -46,6 +46,7 @@ private slots:
     void slotNameEdited(const QString& text);
     void slotAdd();
     void slotRemove();
+    void slotItemChanged(QTreeWidgetItem*,int);
 
 private:
     void updateFunctionList();

@@ -107,47 +107,47 @@ bool QLCIOPlugin::canConfigure()
     return false;
 }
 
-void QLCIOPlugin::setParameter(quint32 universe, quint32 line,
-                               Capability type, QString name, QVariant value)
+void QLCIOPlugin::setParameter(quint32 universe, Capability type,
+                               QString name, QVariant value)
 {
     if (m_universesMap.contains(universe) == false)
         return;
 
-    qDebug() << "[QLCIOPlugin] set parameter:" << universe << line << name << value;
+    qDebug() << "[QLCIOPlugin] set parameter:" << universe << type << name << value;
 
-    if (type == Input && m_universesMap[universe].inputLine == line)
+    if (type == Input)
         m_universesMap[universe].inputParameters[name] = value;
-    else if (type == Output && m_universesMap[universe].outputLine == line)
+    else if (type == Output)
         m_universesMap[universe].outputParameters[name] = value;
 }
 
-void QLCIOPlugin::unSetParameter(quint32 universe, quint32 line, QLCIOPlugin::Capability type, QString name)
+void QLCIOPlugin::unSetParameter(quint32 universe, QLCIOPlugin::Capability type, QString name)
 {
     if (m_universesMap.contains(universe) == false)
         return;
 
-    qDebug() << "[QLCIOPlugin] unset parameter:" << universe << line << name;
+    qDebug() << "[QLCIOPlugin] unset parameter:" << universe << type << name;
 
-    if (type == Input && m_universesMap[universe].inputLine == line)
+    if (type == Input)
     {
         if (m_universesMap[universe].inputParameters.contains(name))
             m_universesMap[universe].inputParameters.take(name);
     }
-    else if (type == Output && m_universesMap[universe].outputLine == line)
+    else if (type == Output)
     {
         if (m_universesMap[universe].outputParameters.contains(name))
             m_universesMap[universe].outputParameters.take(name);
     }
 }
 
-QMap<QString, QVariant> QLCIOPlugin::getParameters(quint32 universe, quint32 line, QLCIOPlugin::Capability type)
+QMap<QString, QVariant> QLCIOPlugin::getParameters(quint32 universe, QLCIOPlugin::Capability type)
 {
     if (m_universesMap.contains(universe) == false)
         return QMap<QString, QVariant>();
 
-    if (type == Input && m_universesMap[universe].inputLine == line)
+    if (type == Input)
         return m_universesMap[universe].inputParameters;
-    else if (type == Output && m_universesMap[universe].outputLine == line)
+    else if (type == Output)
         return m_universesMap[universe].outputParameters;
 
     return QMap<QString, QVariant>();
@@ -187,19 +187,21 @@ void QLCIOPlugin::removeFromMap(quint32 universe, quint32 line, QLCIOPlugin::Cap
     if (type == Input && m_universesMap[universe].inputLine == line)
     {
         m_universesMap[universe].inputLine = UINT_MAX;
-        m_universesMap[universe].inputParameters.clear();
+        //m_universesMap[universe].inputParameters.clear();
         return;
     }
     else if(type == Output && m_universesMap[universe].outputLine == line)
     {
         m_universesMap[universe].outputLine = UINT_MAX;
-        m_universesMap[universe].outputParameters.clear();
+        //m_universesMap[universe].outputParameters.clear();
         return;
     }
 
     // check if we can completely remove this entry
     if (m_universesMap[universe].inputLine == UINT_MAX &&
-        m_universesMap[universe].outputLine == UINT_MAX)
+        m_universesMap[universe].outputLine == UINT_MAX &&
+        m_universesMap[universe].inputParameters.empty() &&
+        m_universesMap[universe].outputParameters.empty())
     {
         m_universesMap.take(universe);
     }

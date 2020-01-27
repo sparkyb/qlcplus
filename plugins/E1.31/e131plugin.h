@@ -122,7 +122,7 @@ public:
     bool canConfigure();
 
     /** @reimp */
-    void setParameter(quint32 universe, quint32 line, Capability type, QString name, QVariant value);
+    void setParameter(quint32 universe, Capability type, QString name, QVariant value);
 
     /** Get a list of the available Input/Output lines */
     QList<E131IO> getIOMapping();

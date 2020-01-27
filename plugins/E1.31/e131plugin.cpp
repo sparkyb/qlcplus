@@ -310,12 +310,9 @@ bool E131Plugin::canConfigure()
     return true;
 }
 
-void E131Plugin::setParameter(quint32 universe, quint32 line, Capability type,
+void E131Plugin::setParameter(quint32 universe, Capability type,
                               QString name, QVariant value)
 {
-    if (line >= (quint32)m_IOmapping.length())
-        return;
-
     E131Controller *controller = m_IOmapping.at(line).controller;
     if (controller == NULL)
         return;

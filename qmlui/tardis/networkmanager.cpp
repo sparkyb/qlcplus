@@ -142,6 +142,8 @@ QString NetworkManager::defaultName()
 {
     for (QNetworkInterface interface : QNetworkInterface::allInterfaces())
     {
+        if (!interface.flags().testFlag(QNetworkInterface::IsUp))
+            continue;
         for (QNetworkAddressEntry entry : interface.addressEntries())
         {
             QHostAddress addr = entry.ip();
@@ -411,6 +413,8 @@ bool NetworkManager::initializeClient()
     /* now send the packet on every network interface */
     foreach(QNetworkInterface interface, QNetworkInterface::allInterfaces())
     {
+        if (!interface.flags().testFlag(QNetworkInterface::IsUp))
+            continue;
         foreach (QNetworkAddressEntry entry, interface.addressEntries())
         {
             if (entry.ip().protocol() != QAbstractSocket::IPv6Protocol && entry.ip() != QHostAddress::LocalHost)

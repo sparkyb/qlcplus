@@ -311,35 +311,32 @@ public:
      * Set an arbitrary parameter useful for the plugin. This is similar
      * to Qt's setProperty
      *
-     * @param universe the universe of the patched $line
-     * @param line the input or output line where the parameter must be set
-     * @param type the type of $line. Can be input or output
+     * @param universe the universe of the patched plugin
+     * @param type the type of line. Can be input or output
      * @param name A string containing the parameter name
      * @param value A QVariant value representing the parameter data
      */
-    virtual void setParameter(quint32 universe, quint32 line, Capability type,
-                              QString name, QVariant value);
+    virtual void setParameter(quint32 universe, Capability type, QString name,
+                              QVariant value);
 
     /**
      * When a custom parameter is set and the user revert back to defaults, this method
      * allow to remove a parameter from the map, so it won't get saved into the project XML
      *
-     * @param universe the universe of the patched $line
-     * @param line the input or output line where the parameter must be unset
-     * @param type the type of $line. Can be input or output
+     * @param universe the universe of the patched plugin
+     * @param type the type of line. Can be input or output
      * @param name a string containing the parameter name
      */
-    virtual void unSetParameter(quint32 universe, quint32 line, Capability type, QString name);
+    virtual void unSetParameter(quint32 universe, Capability type, QString name);
 
     /**
-     * Return the map of custom parameters set on the specified $universe, $line and $type
+     * Return the map of custom parameters set on the specified $universe and $type
      *
-     * @param universe the universe of the patched $line
-     * @param line the input or output line for the requested parameters
-     * @param type the type of $line. Can be input or output
+     * @param universe the universe of the patched plugin
+     * @param type the type of line. Can be input or output
      * @return
      */
-    virtual QMap<QString, QVariant> getParameters(quint32 universe, quint32 line, Capability type);
+    virtual QMap<QString, QVariant> getParameters(quint32 universe, Capability type);
 
 signals:
     /**

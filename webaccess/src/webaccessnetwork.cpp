@@ -151,8 +151,10 @@ QString WebAccessNetwork::getNetworkHTML()
     QStringList systemDevs;
     foreach(QNetworkInterface interface, QNetworkInterface::allInterfaces())
     {
+        if (!interface.flags().testFlag(QNetworkInterface::IsUp))
+            continue;
         qDebug() << "Qt detected interface:" << interface.name();
-        if (interface.name() != "lo")
+        if (!interface.flags().testFlag(QNetworkInterface::IsLoopBack))
             systemDevs.append(interface.name());
     }
 
